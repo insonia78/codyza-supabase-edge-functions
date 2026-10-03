@@ -1,0 +1,32 @@
+import { VerifiedToken } from "./models.ts";
+
+export function jsonResponse(
+  status: number,
+  body: Record<string, unknown>,
+): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers":
+        "authorization, x-client-info, apikey, content-type",
+      "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+      "Content-Type": "application/json",
+    },
+  });
+}
+
+export function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+export function isVerifiedToken(value: unknown): value is VerifiedToken {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    isRecord(value.payload) &&
+    (value.tokenType === "supabase" || value.tokenType === "custom")
+  );
+}
